@@ -80,6 +80,21 @@ public class Utils {
         return BuildConfig.FLAVOR == null || BuildConfig.FLAVOR.equals("") ? "opensource" : BuildConfig.FLAVOR;
     }
 
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    public static void setDefaultLauncher(Context context, String packageName) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            return;
+        }
+        IntentFilter filter = new IntentFilter(Intent.ACTION_MAIN);
+        filter.addCategory(Intent.CATEGORY_HOME);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+
+        ComponentName activity = new ComponentName(packageName, getLauncherActivityName(context, packageName));
+        setPreferredActivity(context, filter, activity, "Set " + packageName + " as default launcher");
+    }
+
+
+
     // Automatically grant permission to get phone state (for IMEI and serial)
     @TargetApi(Build.VERSION_CODES.M)
     public static boolean autoGrantPhonePermission(Context context) {
@@ -406,7 +421,17 @@ public class Utils {
             return false;
         }
     }
-
+    private static String getLauncherActivityName(Context context, String packageName) {
+        PackageManager pm = context.getPackageManager();
+        Intent intent = new Intent(Intent.ACTION_MAIN);
+        intent.addCategory(Intent.CATEGORY_LAUNCHER);
+        intent.setPackage(packageName);
+        List<ResolveInfo> resolveInfos = pm.queryIntentActivities(intent, 0);
+        if (resolveInfos != null && resolveInfos.size() > 0) {
+            return resolveInfos.get(0).activityInfo.name;
+        }
+        return null;
+    }
     private static String getDataToken(Context context) {
         String token = context.getSharedPreferences(Const.PREFERENCES, Context.MODE_PRIVATE).getString(Const.PREFERENCES_DATA_TOKEN, null);
         if (token == null) {

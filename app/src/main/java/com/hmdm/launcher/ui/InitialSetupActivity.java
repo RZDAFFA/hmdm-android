@@ -100,7 +100,7 @@ public class InitialSetupActivity extends BaseActivity implements ConfigUpdater.
                 new AsyncTask<Void, Void, Void>() {
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        Utils.setDefaultLauncher(InitialSetupActivity.this);
+                        Utils.setDefaultLauncher(InitialSetupActivity.this, "com.lifemedia.hospitality");
                         return null;
                     }
 
